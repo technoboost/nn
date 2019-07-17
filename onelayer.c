@@ -5,7 +5,7 @@
 #include <time.h>
 float input[4][3]={{0,0,1},{0,1,1},{1,0,1},{1,1,1}};
 float y[4]={0,1,1,0};
-float weights1[3][4],weights2[4],output[4],layer1[4][4],bias1[4][4],bias2[4],alpha=10;
+float weights1[3][4],weights2[4],output[4],layer1[4][4],bias1[4][4],bias2[4],alpha=0.1;
 float sigmoid(float x)
 {
      float exp_value;
@@ -55,7 +55,7 @@ void main()
     {
             bias2[j]=(double)rand() / (double)RAND_MAX ;
     }
-    for(epoch=0;epoch<100;epoch++)
+    for(epoch=0;epoch<5000;epoch++)
     {
         
         /***********************FEEDFORWARD**************************/
@@ -141,22 +141,22 @@ void main()
                 weights2[j] +=alpha*d_weights2[j];
         }
         /*********************UPDATE BIAS*****************************/
-                printf("\nBias1\n");
+           //     printf("\nBias1\n");
         for (i=0;i<4;i++)
         {
             for(j=0;j<4;j++)
             {
                bias1[i][j] +=alpha*interm2[i][j];
-               printf("%f\t",bias1[i][j]);
+               //printf("%f\t",bias1[i][j]);
             }
-            printf("\n");
+            //printf("\n");
         }
-        printf("\nBias2\n");
+        //printf("\nBias2\n");
         for(j=0;j<4;j++)
         {
                 bias2[j] +=alpha*interm1[j];
-                printf("%f\t",bias2[j]);
+                //printf("%f\t",bias2[j]);
         }
-        printf("\n");
+        //printf("\n");
     }
 }

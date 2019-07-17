@@ -5,7 +5,16 @@
 #include <time.h>
 float input[4][3]={{0,0,1},{0,1,1},{1,0,1},{1,1,1}};
 float y[4]={0,1,1,0};
-float weights1[3][4],weights2[4][5],weights3[5],output[4],layer1[4][4],layer2[4][5],bias1[4][4],bias2[4][5],bias3[5],alpha=10;
+float weights1[3][4];
+float weights2[4][5];
+float weights3[5];
+float output[4];
+float layer1[4][4];
+float layer2[4][5];
+float bias1[4][4];
+float bias2[4][5];
+float bias3[5];
+float alpha=0.1;
 float sigmoid(float x)
 {
      float exp_value;
@@ -31,7 +40,13 @@ float dsigmoid(float x)
 void main()
 {
     int i,j,k,epoch;
-    float product1=0,d_weights1[3][4],d_weights2[4][5],d_weights3[5],interm1[4],interm2[4][5],interm3[4][4];
+    float product1=0;
+    float d_weights1[3][4];
+    float d_weights2[4][5];
+    float d_weights3[5];
+    float interm1[4];
+    float interm2[4][5];
+    float interm3[4][4];
     srand(time(0));
     for (i=0;i<3;i++)
     {
@@ -197,31 +212,31 @@ void main()
                 weights3[j] +=alpha*d_weights3[j];
         }
         /*********************UPDATE BIAS*****************************/
-                printf("\nBias1\n");
+          //      printf("\nBias1\n");
         for (i=0;i<4;i++)
         {
             for(j=0;j<4;j++)
             {
                bias1[i][j] +=alpha*interm3[i][j];
-               printf("%f\t",bias1[i][j]);
+               //printf("%f\t",bias1[i][j]);
             }
-            printf("\n");
+            //printf("\n");
         }
-        printf("\nBias2\n");
+        //printf("\nBias2\n");
         for (i=0;i<4;i++)
         {
             for(j=0;j<5;j++)
             {
                bias2[i][j] +=alpha*interm2[i][j];
-               printf("%f\t",bias2[i][j]);
+               //printf("%f\t",bias2[i][j]);
             }
-            printf("\n");
+            //printf("\n");
         }
-        printf("\nBias3\n");
+        //printf("\nBias3\n");
         for(j=0;j<4;j++)
         {
                 bias3[j] +=alpha*interm1[j];
-                printf("%f\t",bias3[j]);
+                //printf("%f\t",bias3[j]);
         }
         printf("\n");
     }
