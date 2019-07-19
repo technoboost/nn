@@ -27,6 +27,20 @@ float bias5[4][6];
 float bias6[4][4];
 float bias7[4];
 float alpha=1;
+float LeakyRelu(float x)
+{
+    if (x >= 0)
+        return x;
+    else
+        return x / 20;
+}
+float dLeakyRelu(float x)
+{
+    if (x >= 0)
+        return 1;
+    else
+        return 1.0 / 20;
+}
 float sigmoid(float x)
 {
      float exp_value;
@@ -196,7 +210,7 @@ void main()
                 {
                     product1 = product1 + layer2[i][k]*weights3[k][j];
                 }
-                layer3[i][j]=sigmoid(product1+bias3[i][j]);
+                layer3[i][j]=LeakyRelu(product1+bias3[i][j]);
                 product1=0;
             }
         }
@@ -208,7 +222,7 @@ void main()
                 {
                     product1 = product1 + layer3[i][k]*weights4[k][j];
                 }
-                layer4[i][j]=sigmoid(product1+bias4[i][j]);
+                layer4[i][j]=LeakyRelu(product1+bias4[i][j]);
                 product1=0;
             }
         }
@@ -220,7 +234,7 @@ void main()
                 {
                     product1 = product1 + layer4[i][k]*weights5[k][j];
                 }
-                layer5[i][j]=sigmoid(product1+bias5[i][j]);
+                layer5[i][j]=LeakyRelu(product1+bias5[i][j]);
                 product1=0;
             }
         }
@@ -296,7 +310,7 @@ void main()
                 {
                 product1 = product1 + interm2[i][k]*weights6[j][k];
                 }
-                interm3[i][j]=product1*dsigmoid(layer5[i][j]);
+                interm3[i][j]=product1*dLeakyRelu(layer5[i][j]);
                 product1=0;
             }
         }
@@ -320,7 +334,7 @@ void main()
                 {
                 product1 = product1 + interm3[i][k]*weights5[j][k];
                 }
-                interm4[i][j]=product1*dsigmoid(layer4[i][j]);
+                interm4[i][j]=product1*dLeakyRelu(layer4[i][j]);
                 product1=0;
             }
         }
@@ -345,7 +359,7 @@ void main()
                 {
                 product1 = product1 + interm4[i][k]*weights4[j][k];
                 }
-                interm5[i][j]=product1*dsigmoid(layer3[i][j]);
+                interm5[i][j]=product1*dLeakyRelu(layer3[i][j]);
                 product1=0;
             }
         }
