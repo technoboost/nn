@@ -194,6 +194,9 @@ void main()
     double interm5[4][6];
     double interm6[4][5];
     double interm7[4][4];*/
+    double **tlayer[6];
+    double **tinput;
+    
     srand(time(0));
     doublemalloc(&weights[0],3,4);
     doublemalloc(&d_weights[0],3,4);
@@ -218,25 +221,48 @@ void main()
     doublemalloc(&weights[5],6,4);
     doublemalloc(&d_weights[5],6,4);
     doublerandom(&weights[5],6,4);
+    
     doublemalloc(&weights[6],4,1);
     doublemalloc(&d_weights[6],4,1);
     doublerandom(&weights[6],4,1);
     
-    doublemalloc(&bias1,4,4);
-    doublerandom(&bias1,4,4);
-    doublemalloc(&bias2,4,5);
-    doublerandom(&bias2,4,5);
-    doublemalloc(&bias3,4,1);
-    doublerandom(&bias3,4,1);
-    doublemalloc(&interm1,4,1);
-    doublemalloc(&interm2,4,5);
-    doublemalloc(&interm3,4,4);
-    doublemalloc(&layer1,4,4);
-    doublemalloc(&layer2,4,5);
+    doublemalloc(&bias[0],4,4);
+    doublerandom(&bias[0],4,4);
+    doublemalloc(&bias[1],4,5);
+    doublerandom(&bias[1],4,5);
+    doublemalloc(&bias[2],4,6);
+    doublerandom(&bias[2],4,6);
+    doublemalloc(&bias[3],4,6);
+    doublerandom(&bias[3],4,6);
+    doublemalloc(&bias[4],4,6);
+    doublerandom(&bias[4],4,6);
+    doublemalloc(&bias[5],4,4);
+    doublerandom(&bias[5],4,4);
+    doublemalloc(&bias[6],4,1);
+    doublerandom(&bias[6],4,1);
+
+    doublemalloc(&interm[0],4,1);
+    doublemalloc(&interm[1],4,4);
+    doublemalloc(&interm[2],4,6); 
+    doublemalloc(&interm[3],4,6);
+    doublemalloc(&interm[4],4,6);
+    doublemalloc(&interm[5],4,5);
+    doublemalloc(&interm[6],4,4);
+    
+    doublemalloc(&layer[0],4,4);
+    doublemalloc(&layer[1],4,5);
+    doublemalloc(&layer[2],4,6);
+    doublemalloc(&layer[3],4,6);
+    doublemalloc(&layer[4],4,6);
+    doublemalloc(&layer[5],4,4);
     doublemalloc(&input,4,3);
     doublemalloc(&output,4,1);
-    doublemalloc(&tlayer1,4,4);
-    doublemalloc(&tlayer2,5,4);
+    doublemalloc(&tlayer[0],4,4);
+    doublemalloc(&tlayer[1],5,4);
+    doublemalloc(&tlayer[2],6,4);
+    doublemalloc(&tlayer[3],6,4);
+    doublemalloc(&tlayer[4],6,4);
+    doublemalloc(&tlayer[5],4,4);
     doublemalloc(&tweights2,5,4);
     doublemalloc(&tinput,3,4);
     /*for (i=0;i<3;i++)
@@ -336,7 +362,34 @@ void main()
     {
         
         /***********************FEEDFORWARD**************************/
+        matmul(4,3,3,4,layer[0],input,weights[0]);
+        matsum(4,4,layer[0],layer[0],bias[0]);
+        doublematsigmoid(4,4,layer[0],layer[0]);
+        matmul(4,4,4,5,layer[1],layer[0],weights[1]);
+        matsum(4,5,layer[1],layer[1],bias[1]);
+        doublematsigmoid(4,5,layer[1],layer[1]);
+        matmul(4,5,5,6,layer[2],layer[1],weights[2]);
+        matsum(4,6,layer[2],layer[2],bias[2]);
+        doublematsigmoid(4,6,layer[2],layer[2]);
+        matmul(4,6,6,6,layer[3],layer[2],weights[3]);
+        matsum(4,6,layer[3],layer[3],bias[3]);
+        doublematsigmoid(4,6,layer[3],layer[3]);
+        matmul(4,6,6,6,layer[4],layer[3],weights[4]);
+        matsum(4,6,layer[4],layer[4],bias[4]);
+        doublematsigmoid(4,6,layer[4],layer[4]);
+        matmul(4,6,6,4,layer[5],layer[4],weights[5]);
+        matsum(4,4,layer[5],layer[5],bias[5]);
+        doublematsigmoid(4,4,layer[5],layer[5]);
+        matmul(4,5,5,1,output,layer[5],weights[6]);
+        matsum(4,1,output,output,bias[6]);
+        doublematsigmoid(4,1,output,output);
+        printf("\nOutput\n");
         for (i=0;i<4;i++)
+        {
+            printf("%lf\t",output[i][0]);
+        }
+        printf("\n");
+        /*for (i=0;i<4;i++)
         {
             for(j=0;j<4;j++)
             {
@@ -419,7 +472,7 @@ void main()
             product1=0;
             printf("%f\t",output[i]);
         }
-        printf("\n");
+        printf("\n");*/
         
         
         /***********************BACKPROPAGATION****************************/
@@ -427,7 +480,44 @@ void main()
         {
             interm1[i] = 2*(y[i] - output[i])*dsigmoid(output[i]);
         }
-        for (i=0;i<4;i++)
+        mattranspose(4,4,tlayer[5],layer[5]);
+        matmul(4,4,4,1,d_weights[6],tlayer[5],interm[0]);
+        mattranspose(4,1,tweights[6],weights[6]);
+        matmul(4,1,1,4,interm[1],interm[0],tweights[6]); 
+        doublematdsigmoid(4,4,interm[1],layer[5]);
+        
+       
+        mattranspose(4,6,tlayer[4],layer[4]);
+        matmul(6,4,4,4,d_weights[5],tlayer[4],interm[1]);
+        mattranspose(6,4,tweights[5],weights[5]);
+        matmul(4,4,4,6,interm[2],interm[1],tweights[5]); 
+        doublematdsigmoid(4,6,interm[2],layer[4]);
+        
+        mattranspose(4,6,tlayer[3],layer[3]);
+        matmul(6,6,6,4,d_weights[4],tlayer[3],interm[2]);
+        mattranspose(6,6,tweights[4],weights[4]);
+        matmul(4,6,6,6,interm[3],interm[2],tweights[4]); 
+        doublematdsigmoid(4,6,interm[3],layer[3]);
+        
+        mattranspose(4,6,tlayer[2],layer[2]);
+        matmul(4,6,6,4,d_weights[3],tlayer[2],interm[3]);
+        mattranspose(6,6,tweights[3],weights[3]);
+        matmul(4,6,6,6,interm[4],interm[3],tweights[3]); 
+        doublematdsigmoid(4,6,interm[2],layer[2]);
+        
+        mattranspose(4,5,tlayer[1],layer[1]);
+        matmul(5,4,4,6,d_weights[2],tlayer[1],interm[3]);
+        mattranspose(6,6,tweights[2],weights[2]);
+        matmul(4,6,6,6,interm[4],interm[3],tweights[2]); 
+        doublematdsigmoid(4,6,interm[2],layer[1]);
+        
+        matmul(4,4,4,5,d_weights2,tlayer1,interm2);
+        mattranspose(4,5,tweights2,weights2);
+        matmul(4,5,5,4,interm3,interm2,tweights2);
+        doublematdsigmoid(4,5,interm3,layer1);
+        mattranspose(4,6,tinput,input);
+        matmul(3,4,4,4,d_weights1,tinput,interm3);
+        /*for (i=0;i<4;i++)
         {
             for(j=0;j<4;j++)
             {
@@ -584,7 +674,7 @@ void main()
                 d_weights1[i][j]=product1;
                 product1=0;
             }
-        }
+        }*/
         
         
         /*********************UPDATE WEIGHTS*****************************/

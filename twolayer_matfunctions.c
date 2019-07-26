@@ -155,6 +155,7 @@ void main()
     double **tlayer1;
     double **tlayer2;
     double **tweights2;
+    double **tweights3;
     double **tinput;
     srand(time(0));
     doublemalloc(&weights1,3,4);
@@ -182,6 +183,7 @@ void main()
     doublemalloc(&tlayer1,4,4);
     doublemalloc(&tlayer2,5,4);
     doublemalloc(&tweights2,5,4);
+    doublemalloc(&tweights3,5,1);
     doublemalloc(&tinput,3,4);
     for (i=0;i<4;i++)
     {
@@ -198,11 +200,11 @@ void main()
         matsum(4,4,layer1,layer1,bias1);
         doublematsigmoid(4,4,layer1,layer1);
         matmul(4,4,4,5,layer2,layer1,weights2);
-        matsum(4,4,layer2,layer2,bias2);
-        doublematsigmoid(4,4,layer2,layer2);
+        matsum(4,5,layer2,layer2,bias2);
+        doublematsigmoid(4,5,layer2,layer2);
         matmul(4,5,5,1,output,layer2,weights3);
         matsum(4,1,output,output,bias3);
-        doublematsigmoid(4,4,output,output);
+        doublematsigmoid(4,1,output,output);
         printf("\nOutput\n");
         for (i=0;i<4;i++)
         {
@@ -218,13 +220,16 @@ void main()
         }
         mattranspose(4,5,tlayer2,layer2);
         matmul(5,4,4,1,d_weights3,tlayer2,interm1);
-        matmul(4,1,1,5,interm2,interm1,weights3); 
+        mattranspose(5,1,tweights3,weights3);
+        matmul(4,1,1,5,interm2,interm1,tweights3); 
         doublematdsigmoid(4,5,interm2,layer2);
+        
         mattranspose(4,4,tlayer1,layer1);
         matmul(4,4,4,5,d_weights2,tlayer1,interm2);
         mattranspose(4,5,tweights2,weights2);
         matmul(4,5,5,4,interm3,interm2,tweights2);
-        doublematdsigmoid(4,5,interm3,layer1);
+        doublematdsigmoid(4,4,interm3,layer1);
+        
         mattranspose(4,3,tinput,input);
         matmul(3,4,4,4,d_weights1,tinput,interm3);
         
