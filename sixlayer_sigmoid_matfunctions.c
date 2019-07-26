@@ -279,10 +279,10 @@ void main()
         doublematsigmoid(4,5,layer[1],layer[1]);
         matmul(4,5,5,6,layer[2],layer[1],weights[2]);
         matsum(4,6,layer[2],layer[2],bias[2]);
-        doublematleakyrelu(4,6,layer[2],layer[2]);
+        doublematsigmoid(4,6,layer[2],layer[2]);
         matmul(4,6,6,6,layer[3],layer[2],weights[3]);
         matsum(4,6,layer[3],layer[3],bias[3]);
-        doublematleakyrelu(4,6,layer[3],layer[3]);
+        doublematsigmoid(4,6,layer[3],layer[3]);
         matmul(4,6,6,6,layer[4],layer[3],weights[4]);
         matsum(4,6,layer[4],layer[4],bias[4]);
         doublematsigmoid(4,6,layer[4],layer[4]);
@@ -321,13 +321,13 @@ void main()
         matmul(6,4,4,6,d_weights[4],tlayer[3],interm[2]);
         mattranspose(6,6,tweights[4],weights[4]);
         matmul(4,6,6,6,interm[3],interm[2],tweights[4]); 
-        doublematdleakyrelu(4,6,interm[3],layer[3]);
+        doublematdsigmoid(4,6,interm[3],layer[3]);
         
         mattranspose(4,6,tlayer[2],layer[2]);
         matmul(6,4,4,6,d_weights[3],tlayer[2],interm[3]);
         mattranspose(6,6,tweights[3],weights[3]);
         matmul(4,6,6,6,interm[4],interm[3],tweights[3]); 
-        doublematdleakyrelu(4,6,interm[4],layer[2]);
+        doublematdsigmoid(4,6,interm[4],layer[2]);
         
         mattranspose(4,5,tlayer[1],layer[1]);
         matmul(5,4,4,6,d_weights[2],tlayer[1],interm[4]);

@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <time.h>
 float input[4][3]={{0,0,1},{0,1,1},{1,0,1},{1,1,1}};
-float y[4]={0,1,1,1};
+float y[4]={0,1,1,0};
 float weights1[3][4];
 float weights2[4][5];
 float weights3[5][6];
