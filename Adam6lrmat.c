@@ -4,9 +4,11 @@
 #include <stdlib.h>
 #include <time.h>
 #include <string.h>
-double x[4][3]={{0,0,1},{0,1,1},{1,0,1},{1,1,1}};
-double y[4]={0,1,1,0};
-double alpha=1;
+double y[4]={0,0,0,0};
+double alpha=0.1;
+double beta_1 = 0.9;
+double beta_2 = 0.999;
+double epsilon = 1e-8;
 
 const char* getfield(char* line, int num)
 {
@@ -45,7 +47,7 @@ void readcsvfile(char *inputfile,int linenumber,double *input[])
             tmp = strdup(line);
             
             sscanf(getfield(tmp,3), "%lf", &y[i-linenumber]);
-            //printf(" %lf\n",y[i-linenumber]);
+            printf(" %lf\n",y[i-linenumber]);
             // NOTE strtok clobbers tmp
             free(tmp);
         }
@@ -130,6 +132,17 @@ void doublerandom(double ***var, int row, int col)
         }
     }
 }
+void doublezero(double ***var, int row, int col)
+{
+    int i,j;
+    for (i=0;i<row;i++)
+    {
+        for(j=0;j<col;j++)
+        {
+            (*var)[i][j]=0 ;
+        }
+    }
+}
 void doublefree(double ***var, int row)
 {
     int i;
@@ -204,14 +217,20 @@ void doublematdleakyrelu(int row, int col,double *ans[], double *matrix[])
         }
     }
 }
-void updateparams(int row, int col, double *ans[], double *params[])
+void updateparams(int row, int col, double *ans[], double *ans_m_t[], double *ans_v_t[], double *params[], int t)
 {
     int i,j;
+    double m_cap,v_cap;
     for (i=0;i<row;i++)
     {
         for(j=0;j<col;j++)
         {
             ans[i][j] +=alpha*params[i][j];
+             ans_m_t[i][j] = beta_1*ans_m_t[i][j] + (1-beta_1)*params[i][j];	//updates the moving averages of the gradient
+	            ans_v_t[i][j] = beta_2*ans_v_t[i][j] + (1-beta_2)*(params[i][j]*params[i][j]);	//updates the moving averages of the squared gradient
+	            m_cap = ans_m_t[i][j]/(1-(pow(beta_1,t)));		//calculates the bias-corrected estimates
+	            v_cap = ans_v_t[i][j]/(1-(pow(beta_2,t)));		//calculates the bias-corrected estimates
+	            ans[i][j] = ans[i][j] + (alpha*m_cap)/(sqrt(v_cap)+epsilon);	//updates the parameters
         }
     }
 }
@@ -221,13 +240,16 @@ void main(int argc, char *argv[])
 {
     int linenumber = 0;
     int datacount = 500;
-    int i,j,k,epoch;
+    int i,j,k,epoch,t;
     double **input;
     double **weights[7];
+    double **weights_m_t[7];
+    double **weights_v_t[7];
     double **output;
     double **layer[6];
     double **bias[7];
-    double product1=0;
+    double **bias_m_t[7];
+    double **bias_v_t[7];
     double **d_weights[7];
     double **interm[7];
     double **tlayer[6];
@@ -235,32 +257,63 @@ void main(int argc, char *argv[])
     double **tweights[7];
     srand(time(0));
     doublemalloc(&weights[0],3,4);
+    doublemalloc(&weights_m_t[0],3,4);
+    doublemalloc(&weights_v_t[0],3,4);
     doublemalloc(&d_weights[0],3,4);
     doublerandom(&weights[0],3,4);
+    doublezero(&weights_m_t[0],3,4);
+    doublezero(&weights_v_t[0],3,4);
+    
     
     doublemalloc(&weights[1],4,5);
+    doublemalloc(&weights_m_t[1],4,5);
+    doublemalloc(&weights_v_t[1],4,5);
     doublemalloc(&d_weights[1],4,5);
     doublerandom(&weights[1],4,5);
+    doublezero(&weights_m_t[1],4,5);
+    doublezero(&weights_v_t[1],4,5);
+    
     
     doublemalloc(&weights[2],5,6);
+    doublemalloc(&weights_m_t[2],5,6);
+    doublemalloc(&weights_v_t[2],5,6);
     doublemalloc(&d_weights[2],5,6);
     doublerandom(&weights[2],5,6);
+    doublezero(&weights_m_t[2],5,6);
+    doublezero(&weights_v_t[2],5,6);
+    
     
     doublemalloc(&weights[3],6,6);
+    doublemalloc(&weights_m_t[3],6,6);
+    doublemalloc(&weights_v_t[3],6,6);
     doublemalloc(&d_weights[3],6,6);
     doublerandom(&weights[3],6,6);
+    doublezero(&weights_m_t[3],6,6);
+    doublezero(&weights_v_t[3],6,6);
     
     doublemalloc(&weights[4],6,6);
+    doublemalloc(&weights_m_t[4],6,6);
+    doublemalloc(&weights_v_t[4],6,6);
     doublemalloc(&d_weights[4],6,6);
     doublerandom(&weights[4],6,6);
+    doublezero(&weights_m_t[4],6,6);
+    doublezero(&weights_v_t[4],6,6);
     
     doublemalloc(&weights[5],6,4);
+    doublemalloc(&weights_m_t[5],6,4);
+    doublemalloc(&weights_v_t[5],6,4);
     doublemalloc(&d_weights[5],6,4);
     doublerandom(&weights[5],6,4);
+    doublezero(&weights_m_t[5],6,4);
+    doublezero(&weights_v_t[5],6,4);
     
     doublemalloc(&weights[6],4,1);
+    doublemalloc(&weights_m_t[6],4,1);
+    doublemalloc(&weights_v_t[6],4,1);
     doublemalloc(&d_weights[6],4,1);
     doublerandom(&weights[6],4,1);
+    doublezero(&weights_m_t[6],4,1);
+    doublezero(&weights_v_t[6],4,1);
     
     doublemalloc(&bias[0],4,4);
     doublerandom(&bias[0],4,4);
@@ -276,6 +329,36 @@ void main(int argc, char *argv[])
     doublerandom(&bias[5],4,4);
     doublemalloc(&bias[6],4,1);
     doublerandom(&bias[6],4,1);
+    
+    doublemalloc(&bias_m_t[0],4,4);
+    doublemalloc(&bias_v_t[0],4,4);
+    doublemalloc(&bias_m_t[1],4,5);
+    doublemalloc(&bias_v_t[1],4,5);
+    doublemalloc(&bias_m_t[2],4,6);
+    doublemalloc(&bias_v_t[2],4,6);
+    doublemalloc(&bias_m_t[3],4,6);
+    doublemalloc(&bias_v_t[3],4,6);
+    doublemalloc(&bias_m_t[4],4,6);
+    doublemalloc(&bias_v_t[4],4,6);
+    doublemalloc(&bias_m_t[5],4,4);
+    doublemalloc(&bias_v_t[5],4,4);
+    doublemalloc(&bias_m_t[6],4,1);
+    doublemalloc(&bias_v_t[6],4,1);
+    
+    doublezero(&bias_m_t[0],4,4);
+    doublezero(&bias_v_t[0],4,4);
+    doublezero(&bias_m_t[1],4,5);
+    doublezero(&bias_v_t[1],4,5);
+    doublezero(&bias_m_t[2],4,6);
+    doublezero(&bias_v_t[2],4,6);
+    doublezero(&bias_m_t[3],4,6);
+    doublezero(&bias_v_t[3],4,6);
+    doublezero(&bias_m_t[4],4,6);
+    doublezero(&bias_v_t[4],4,6);
+    doublezero(&bias_m_t[5],4,4);
+    doublezero(&bias_v_t[5],4,4);
+    doublezero(&bias_m_t[6],4,1);
+    doublezero(&bias_v_t[6],4,1);
 
     doublemalloc(&interm[0],4,1);
     doublemalloc(&interm[1],4,4);
@@ -322,7 +405,8 @@ void main(int argc, char *argv[])
             readcsvfile(argv[1],linenumber,input);
             linenumber+=4;           
             printf("%d",linenumber);
-            for(epoch=0;epoch<5;epoch++)
+            t=0;
+            for(epoch=0;epoch<100;epoch++)
             {
                 
                 /***********************FEEDFORWARD**************************/
@@ -347,12 +431,6 @@ void main(int argc, char *argv[])
                 matmul(4,4,4,1,output,layer[5],weights[6]);
                 matsum(4,1,output,output,bias[6]);
                 doublematsigmoid(4,1,output,output);
-                printf("\nOutput\n");
-                for (i=0;i<4;i++)
-                {
-                    printf("%lf\t",output[i][0]);
-                }
-                printf("\n");
                 
                 /***********************BACKPROPAGATION****************************/
                 for(i=0;i<4;i++)
@@ -400,23 +478,30 @@ void main(int argc, char *argv[])
                 matmul(3,4,4,4,d_weights[0],tinput,interm[6]);
                 
                 /*********************UPDATE WEIGHTS*****************************/
-                updateparams(3,4,weights[0],d_weights[0]);
-                updateparams(4,5,weights[1],d_weights[1]);
-                updateparams(5,6,weights[2],d_weights[2]);
-                updateparams(6,6,weights[3],d_weights[3]);
-                updateparams(6,6,weights[4],d_weights[4]);
-                updateparams(6,4,weights[5],d_weights[5]);
-                updateparams(4,1,weights[6],d_weights[6]);
+                t+=1;
+                updateparams(3,4,weights[0],weights_m_t[0],weights_v_t[0],d_weights[0],t);
+                updateparams(4,5,weights[1],weights_m_t[1],weights_v_t[1],d_weights[1],t);
+                updateparams(5,6,weights[2],weights_m_t[2],weights_v_t[2],d_weights[2],t);
+                updateparams(6,6,weights[3],weights_m_t[3],weights_v_t[3],d_weights[3],t);
+                updateparams(6,6,weights[4],weights_m_t[4],weights_v_t[4],d_weights[4],t);
+                updateparams(6,4,weights[5],weights_m_t[5],weights_v_t[5],d_weights[5],t);
+                updateparams(4,1,weights[6],weights_m_t[6],weights_v_t[6],d_weights[6],t);
                 
                 /*********************UPDATE BIAS*****************************/
-                updateparams(4,4,bias[0],interm[6]);
-                updateparams(4,5,bias[1],interm[5]);
-                updateparams(4,6,bias[2],interm[4]);
-                updateparams(4,6,bias[3],interm[3]);
-                updateparams(4,6,bias[4],interm[2]);
-                updateparams(4,4,bias[5],interm[1]);
-                updateparams(4,1,bias[6],interm[0]);
+                updateparams(4,4,bias[0],bias_m_t[0],bias_v_t[0],interm[6],t);
+                updateparams(4,5,bias[1],bias_m_t[1],bias_v_t[1],interm[5],t);
+                updateparams(4,6,bias[2],bias_m_t[2],bias_v_t[2],interm[4],t);
+                updateparams(4,6,bias[3],bias_m_t[3],bias_v_t[3],interm[3],t);
+                updateparams(4,6,bias[4],bias_m_t[4],bias_v_t[4],interm[2],t);
+                updateparams(4,4,bias[5],bias_m_t[5],bias_v_t[5],interm[1],t);
+                updateparams(4,1,bias[6],bias_m_t[6],bias_v_t[6],interm[0],t);
             }//epoch
+            printf("\nOutput\n");
+                for (i=0;i<4;i++)
+                {
+                    printf("%lf\t",output[i][0]);
+                }
+                printf("\n");
         }//while
     }//else
 }
