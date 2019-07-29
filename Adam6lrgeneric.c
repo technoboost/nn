@@ -6,9 +6,10 @@
 #include <string.h>
 #define NUM_LAYERS 8
 #define BATCH_SIZE 4
-int num_neurons[NUM_LAYERS]={2,4,5,6,6,6,4,1};
+#define INPUT_SIZE 2
+int num_neurons[NUM_LAYERS]={INPUT_SIZE,6,10,20,10,6,4,1};
 double y[4]={0,0,0,0};
-double alpha=0.1;
+double alpha=0.01;
 double beta_1 = 0.9;
 double beta_2 = 0.999;
 double epsilon = 1e-8;
@@ -26,31 +27,27 @@ const char* getfield(char* line, int num)
     return NULL;
 }
 
-void readcsvfile(char *inputfile,int linenumber,double *input[])
+void readcsvfile(char *inputfile,int linenumber,int size, double *input[])
 {
     FILE* stream = fopen(inputfile, "r");
     char line[1024];
-    int i=0;
+    int i=0,j;
+    char* tmp;
     while (fgets(line, 1024, stream))
     {
-        if( i>=linenumber && i<(linenumber+4))
+        if( i>=linenumber && i<(linenumber+size))
         {
-            char* tmp = strdup(line);
-            //printf("Field 1 would be %s", getfield(tmp, 1));
-            sscanf(getfield(tmp,1), "%lf", &input[i-linenumber][0]);
-            // NOTE strtok clobbers tmp
-            free(tmp);
+            for(j=0;j<INPUT_SIZE;j++)
+            { 
+                tmp = strdup(line);
+                //printf("Field 1 would be %s", getfield(tmp, 1));
+                sscanf(getfield(tmp,1), "%lf", &input[i-linenumber][j]);
+                // NOTE strtok clobbers tmp
+                free(tmp);
+            }
             tmp = strdup(line);
-            
-            sscanf(getfield(tmp,2), "%lf", &input[i-linenumber][1]);
-            //printf(" %4.10lf\n",input[i-linenumber][1]);
-            // NOTE strtok clobbers tmp
-            free(tmp);
-            //input[i-linenumber][2]=1;
-            tmp = strdup(line);
-            
             sscanf(getfield(tmp,3), "%lf", &y[i-linenumber]);
-            printf(" %lf\n",y[i-linenumber]);
+            //printf(" %lf\n",y[i-linenumber]);
             // NOTE strtok clobbers tmp
             free(tmp);
         }
@@ -229,11 +226,11 @@ void updateparams(int row, int col, double *ans[], double *ans_m_t[], double *an
         for(j=0;j<col;j++)
         {
             ans[i][j] +=alpha*params[i][j];
-             ans_m_t[i][j] = beta_1*ans_m_t[i][j] + (1-beta_1)*params[i][j];	//updates the moving averages of the gradient
-	            ans_v_t[i][j] = beta_2*ans_v_t[i][j] + (1-beta_2)*(params[i][j]*params[i][j]);	//updates the moving averages of the squared gradient
-	            m_cap = ans_m_t[i][j]/(1-(pow(beta_1,t)));		//calculates the bias-corrected estimates
-	            v_cap = ans_v_t[i][j]/(1-(pow(beta_2,t)));		//calculates the bias-corrected estimates
-	            ans[i][j] = ans[i][j] + (alpha*m_cap)/(sqrt(v_cap)+epsilon);	//updates the parameters
+             /*ans_m_t[i][j] = beta_1*ans_m_t[i][j] + (1-beta_1)*params[i][j];	//updates the moving averages of the gradient
+	         ans_v_t[i][j] = beta_2*ans_v_t[i][j] + (1-beta_2)*(params[i][j]*params[i][j]);	//updates the moving averages of the squared gradient
+	         m_cap = ans_m_t[i][j]/(1-(pow(beta_1,t)));		//calculates the bias-corrected estimates
+	         v_cap = ans_v_t[i][j]/(1-(pow(beta_2,t)));		//calculates the bias-corrected estimates
+	         ans[i][j] = ans[i][j] + (alpha*m_cap)/(sqrt(v_cap)+epsilon);*/	//updates the parameters
         }
     }
 }
@@ -277,7 +274,7 @@ void main(int argc, char *argv[])
         doublemalloc(&layer[i],BATCH_SIZE,num_neurons[i]);
         doublemalloc(&tlayer[i],num_neurons[i],BATCH_SIZE);
     }
-    doublemalloc(&output,4,1);
+    doublemalloc(&output,BATCH_SIZE,1);
     if (argc>3)
     {
         printf("\n Sorry wrong arguments\n");
@@ -288,14 +285,18 @@ void main(int argc, char *argv[])
     }
     else
     {
-        while(linenumber<datacount)
+        for(epoch=0;epoch<100;epoch++)
         {
-            readcsvfile(argv[1],linenumber,layer[0]);
-            linenumber+=4;           
-            printf("%d",linenumber);
-            t=0;
-            for(epoch=0;epoch<100;epoch++)
+            linenumber = 0;
+            printf("%d",epoch);
+            while(linenumber<datacount)
             {
+                
+                readcsvfile(argv[1],linenumber,BATCH_SIZE,layer[0]);
+                linenumber+=BATCH_SIZE;           
+                //printf("%d",linenumber);
+                t=0;
+            
                 
                 /***********************FEEDFORWARD**************************/
                 for(i=0;i<(NUM_LAYERS-2);i++)
@@ -304,12 +305,12 @@ void main(int argc, char *argv[])
                     matsum(BATCH_SIZE,num_neurons[i+1],layer[i+1],layer[i+1],bias[i]);
                     doublematsigmoid(BATCH_SIZE,num_neurons[i+1],layer[i+1],layer[i+1]);
                 }
-                matmul(BATCH_SIZE,num_neurons[i],num_neurons[i],num_neurons[i+1],output,layer[6],weights[6]);
-                matsum(BATCH_SIZE,num_neurons[i+1],output,output,bias[6]);
+                matmul(BATCH_SIZE,num_neurons[i],num_neurons[i],num_neurons[i+1],output,layer[NUM_LAYERS-2],weights[NUM_LAYERS-2]);
+                matsum(BATCH_SIZE,num_neurons[i+1],output,output,bias[NUM_LAYERS-2]);
                 doublematsigmoid(BATCH_SIZE,num_neurons[i+1],output,output);
                 
                 /***********************BACKPROPAGATION****************************/
-                for(i=0;i<4;i++)
+                for(i=0;i<BATCH_SIZE;i++)
                 {
                     interm[0][i][0] = 2*(y[i] - output[i][0])*dsigmoid(output[i][0]);
                 }
@@ -335,30 +336,30 @@ void main(int argc, char *argv[])
                 /*********************UPDATE BIAS*****************************/
                 for(i=0;i <(NUM_LAYERS-1);i++)
                 {
-                updateparams(BATCH_SIZE,num_neurons[i+1],bias[i],bias_m_t[i],bias_v_t[i],interm[NUM_LAYERS-2-i],t);
+                    updateparams(BATCH_SIZE,num_neurons[i+1],bias[i],bias_m_t[i],bias_v_t[i],interm[NUM_LAYERS-2-i],t);
                 }
-            }//epoch
+            }//while
             printf("\nOutput\n");
-                for (i=0;i<4;i++)
+                for (i=0;i<BATCH_SIZE;i++)
                 {
                     printf("%lf\t",output[i][0]);
                 }
                 printf("\n");
            
-        }//while
+        }//epoch
                 /************************TESTING***************************************/
-                readcsvfile(argv[2],0,layer[0]);
+                readcsvfile(argv[2],0,1,layer[0]);
                 for(i=0;i<(NUM_LAYERS-2);i++)
                 {
                     matmul(BATCH_SIZE,num_neurons[i],num_neurons[i],num_neurons[i+1],layer[i+1],layer[i],weights[i]);
                     matsum(BATCH_SIZE,num_neurons[i+1],layer[i+1],layer[i+1],bias[i]);
                     doublematsigmoid(BATCH_SIZE,num_neurons[i+1],layer[i+1],layer[i+1]);
                 }
-                matmul(BATCH_SIZE,num_neurons[i],num_neurons[i],num_neurons[i+1],output,layer[6],weights[6]);
-                matsum(BATCH_SIZE,num_neurons[i+1],output,output,bias[6]);
+                matmul(BATCH_SIZE,num_neurons[i],num_neurons[i],num_neurons[i+1],output,layer[NUM_LAYERS-2],weights[NUM_LAYERS-2]);
+                matsum(BATCH_SIZE,num_neurons[i+1],output,output,bias[NUM_LAYERS-2]);
                 doublematsigmoid(BATCH_SIZE,num_neurons[i+1],output,output);
                 printf("\nOutput\n");
-                for (i=0;i<4;i++)
+                for (i=0;i<1;i++)
                 {
                     printf("%lf\t",output[i][0]);
                 }
