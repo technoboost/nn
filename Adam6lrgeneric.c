@@ -4,11 +4,11 @@
 #include <stdlib.h>
 #include <time.h>
 #include <string.h>
-#define NUM_LAYERS 8
+#define NUM_LAYERS 5
 #define BATCH_SIZE 4
 #define INPUT_SIZE 2
-int num_neurons[NUM_LAYERS]={INPUT_SIZE,6,10,20,10,6,4,1};
-double y[4]={0,0,0,0};
+int num_neurons[NUM_LAYERS]={INPUT_SIZE,4,4,4,1};
+double y[BATCH_SIZE];
 double alpha=0.01;
 double beta_1 = 0.9;
 double beta_2 = 0.999;
@@ -274,6 +274,7 @@ void main(int argc, char *argv[])
         doublemalloc(&layer[i],BATCH_SIZE,num_neurons[i]);
         doublemalloc(&tlayer[i],num_neurons[i],BATCH_SIZE);
     }
+    printf("%d",linenumber);
     doublemalloc(&output,BATCH_SIZE,1);
     if (argc>3)
     {
@@ -321,9 +322,9 @@ void main(int argc, char *argv[])
                     mattranspose(num_neurons[NUM_LAYERS-2-i],num_neurons[NUM_LAYERS-1-i],tweights[NUM_LAYERS-2-i],weights[NUM_LAYERS-2-i]);
                     matmul(BATCH_SIZE,num_neurons[NUM_LAYERS-1-i],num_neurons[NUM_LAYERS-1-i],num_neurons[NUM_LAYERS-2-i],interm[i+1],interm[i],tweights[NUM_LAYERS-2-i]); 
                     doublematdsigmoid(BATCH_SIZE,num_neurons[NUM_LAYERS-2-i],interm[i+1],layer[NUM_LAYERS-2-i]);
-                }               
+                }    
                 mattranspose(BATCH_SIZE,num_neurons[0],tlayer[0],layer[0]);
-                matmul(num_neurons[0],BATCH_SIZE,BATCH_SIZE,num_neurons[1],d_weights[0],tlayer[0],interm[6]);
+                matmul(num_neurons[0],BATCH_SIZE,BATCH_SIZE,num_neurons[1],d_weights[0],tlayer[0],interm[NUM_LAYERS-2]);
                 
                 /*********************UPDATE WEIGHTS*****************************/
                 t+=1;
@@ -359,7 +360,7 @@ void main(int argc, char *argv[])
                 matsum(BATCH_SIZE,num_neurons[i+1],output,output,bias[NUM_LAYERS-2]);
                 doublematsigmoid(BATCH_SIZE,num_neurons[i+1],output,output);
                 printf("\nOutput\n");
-                for (i=0;i<1;i++)
+                for (i=0;i<4;i++)
                 {
                     printf("%lf\t",output[i][0]);
                 }
