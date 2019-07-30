@@ -14,6 +14,23 @@ double beta_1 = 0.9;
 double beta_2 = 0.999;
 double epsilon = 1e-8;
 
+int rando() {
+    int n;
+    n = rand()%2 ;
+    return n;
+}
+
+void doubledropout(int row, int col, double *ans[], double *matrix[])
+{
+    int i,j;
+    for(i=0;i<row;i++)
+    {
+        for(j=0;j<col;j++)
+        {
+             ans[i][j]=rando()*matrix[i][j];
+        }
+    }
+}
 const char* getfield(char* line, int num)
 {
     const char* tok;
@@ -286,10 +303,14 @@ void main(int argc, char *argv[])
     }
     else
     {
-        for(epoch=0;epoch<100;epoch++)
+        for(epoch=0;epoch<10;epoch++)
         {        
             linenumber = 0;
             printf("%d",epoch);
+            for(i=0;i<(NUM_LAYERS-1);i++)
+            {
+                 doubledropout(num_neurons[i],num_neurons[i+1],weights[i],weights[i]);
+            }
             while(linenumber<datacount)
             {
                 
@@ -342,12 +363,13 @@ void main(int argc, char *argv[])
                     }
                 }//batch_iter
             }//while
+            
             printf("\nOutput\n");
-                for (i=0;i<BATCH_SIZE;i++)
-                {
-                    printf("%lf\t",output[i][0]);
-                }
-                printf("\n");
+            for (i=0;i<BATCH_SIZE;i++)
+            {
+                printf("%lf\t",output[i][0]);
+            }
+            printf("\n");
            
         }//epoch
                 /************************TESTING***************************************/
