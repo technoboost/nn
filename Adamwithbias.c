@@ -7,7 +7,7 @@
 #define NUM_LAYERS 3
 #define BATCH_SIZE 10
 #define INPUT_SIZE 2
-int num_neurons[NUM_LAYERS]={INPUT_SIZE,4,1};
+int num_neurons[NUM_LAYERS]={INPUT_SIZE,5,1};
 double y[BATCH_SIZE];
 double alpha=1;
 double beta_1 = 0.9;
@@ -263,9 +263,9 @@ void main(int argc, char *argv[])
     double **weights_v_t[NUM_LAYERS-1];
     double **output;
     double **layer[NUM_LAYERS-1];
-    /*double **bias[NUM_LAYERS-1];
+    double **bias[NUM_LAYERS-1];
     double **bias_m_t[NUM_LAYERS-1];
-    double **bias_v_t[NUM_LAYERS-1];*/
+    double **bias_v_t[NUM_LAYERS-1];
     double **d_weights[NUM_LAYERS-1];
     double **interm[NUM_LAYERS-1];
     double **tlayer[NUM_LAYERS-1];
@@ -281,12 +281,12 @@ void main(int argc, char *argv[])
         doublezero(&weights_m_t[i],num_neurons[i],num_neurons[i+1]);
         doublezero(&weights_v_t[i],num_neurons[i],num_neurons[i+1]);
         doublemalloc(&tweights[i],num_neurons[i+1],num_neurons[i]);
-        /*doublemalloc(&bias[i],BATCH_SIZE,num_neurons[i+1]);
-        doublerandom(&bias[i],BATCH_SIZE,num_neurons[i+1]);
+        doublemalloc(&bias[i],BATCH_SIZE,num_neurons[i+1]);
+        doublezero(&bias[i],BATCH_SIZE,num_neurons[i+1]);
         doublemalloc(&bias_m_t[i],BATCH_SIZE,num_neurons[i+1]);
         doublemalloc(&bias_v_t[i],BATCH_SIZE,num_neurons[i+1]);
         doublezero(&bias_m_t[i],BATCH_SIZE,num_neurons[i+1]);
-        doublezero(&bias_v_t[i],BATCH_SIZE,num_neurons[i+1]);*/
+        doublezero(&bias_v_t[i],BATCH_SIZE,num_neurons[i+1]);
         doublemalloc(&interm[NUM_LAYERS-i-2],BATCH_SIZE,num_neurons[i+1]);
         doublemalloc(&layer[i],BATCH_SIZE,num_neurons[i]);
         doublemalloc(&tlayer[i],num_neurons[i],BATCH_SIZE);
@@ -303,14 +303,14 @@ void main(int argc, char *argv[])
     }
     else
     {
-        for(epoch=0;epoch<10000;epoch++)
+        for(epoch=0;epoch<800;epoch++)
         {        
             linenumber = 0;
             printf("%d",epoch);
-            for(i=0;i<(NUM_LAYERS-1);i++)
+            /*for(i=0;i<(NUM_LAYERS-1);i++)
             {
                  doubledropout(num_neurons[i],num_neurons[i+1],weights[i],weights[i]);
-            }
+            }*/
             while(linenumber<datacount)
             {
                 
@@ -325,11 +325,11 @@ void main(int argc, char *argv[])
                     for(i=0;i<(NUM_LAYERS-2);i++)
                     {
                         matmul(BATCH_SIZE,num_neurons[i],num_neurons[i],num_neurons[i+1],layer[i+1],layer[i],weights[i]);
-                        /*matsum(BATCH_SIZE,num_neurons[i+1],layer[i+1],layer[i+1],bias[i]);*/
+                        matsum(BATCH_SIZE,num_neurons[i+1],layer[i+1],layer[i+1],bias[i]);
                         doublematsigmoid(BATCH_SIZE,num_neurons[i+1],layer[i+1],layer[i+1]);
                     }
                     matmul(BATCH_SIZE,num_neurons[i],num_neurons[i],num_neurons[i+1],output,layer[NUM_LAYERS-2],weights[NUM_LAYERS-2]);
-                    /*matsum(BATCH_SIZE,num_neurons[i+1],output,output,bias[NUM_LAYERS-2]);*/
+                    matsum(BATCH_SIZE,num_neurons[i+1],output,output,bias[NUM_LAYERS-2]);
                     doublematsigmoid(BATCH_SIZE,num_neurons[i+1],output,output);
                     
                     /***********************BACKPROPAGATION****************************/
@@ -357,10 +357,10 @@ void main(int argc, char *argv[])
                     
                     
                     /*********************UPDATE BIAS*****************************/
-                    /*for(i=0;i <(NUM_LAYERS-1);i++)
+                    for(i=0;i <(NUM_LAYERS-1);i++)
                     {
                         updateparams(BATCH_SIZE,num_neurons[i+1],bias[i],bias_m_t[i],bias_v_t[i],interm[NUM_LAYERS-2-i],t);
-                    }*/
+                    }
                 }//batch_iter
             }//while
             
@@ -377,11 +377,11 @@ void main(int argc, char *argv[])
                 for(i=0;i<(NUM_LAYERS-2);i++)
                 {
                     matmul(4,num_neurons[i],num_neurons[i],num_neurons[i+1],layer[i+1],layer[i],weights[i]);
-                    /*matsum(4,num_neurons[i+1],layer[i+1],layer[i+1],bias[i]);*/
+                    matsum(4,num_neurons[i+1],layer[i+1],layer[i+1],bias[i]);
                     doublematsigmoid(4,num_neurons[i+1],layer[i+1],layer[i+1]);
                 }
                 matmul(4,num_neurons[i],num_neurons[i],num_neurons[i+1],output,layer[NUM_LAYERS-2],weights[NUM_LAYERS-2]);
-                /*matsum(4,num_neurons[i+1],output,output,bias[NUM_LAYERS-2]);*/
+                matsum(4,num_neurons[i+1],output,output,bias[NUM_LAYERS-2]);
                 doublematsigmoid(4,num_neurons[i+1],output,output);
                 printf("\nOutput\n");
                 for (i=0;i<4;i++)
