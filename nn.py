@@ -5,6 +5,7 @@ import numpy as np
       
 # Each row is a training example, each column is a feature  [X1, X2, X3]
 X=np.array(([0,0,1],[0,1,1],[1,0,1],[1,1,1]), dtype=float)
+X1=np.array(([0,1,1],[0,1,1],[0,0,1],[1,0,1]), dtype=float)
 y=np.array(([0],[1],[1],[0]), dtype=float)
 print(X.shape[1])
 # Define useful functions    
@@ -52,6 +53,13 @@ class NeuralNetwork:
         self.output = self.feedforward()
         self.backprop()
         
+    def test(self, X1) :
+        self.input = X1
+        self.layer1 = sigmoid(np.dot(self.input, self.weights1))
+        self.layer2 = sigmoid(np.dot(self.layer1, self.weights2))
+        self.layer3 = sigmoid(np.dot(self.layer2, self.weights3))
+        return self.layer3
+        
 
 NN = NeuralNetwork(X,y)
 for i in range(1500): # trains the NN 1,000 times
@@ -64,3 +72,4 @@ for i in range(1500): # trains the NN 1,000 times
         print ("\n")
   
     NN.train(X, y)
+print ("Predicted Output: \n" + str(NN.test(X1)))

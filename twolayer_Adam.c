@@ -312,4 +312,44 @@ void main()
         }
         printf("\n");
     }
+    
+    /***********TESTING********************/
+    double input1[4][3]={{0,1,1},{0,0,1},{1,1,1},{1,0,1}};/* 1 0 0 1*/
+    for (i=0;i<4;i++)
+        {
+            for(j=0;j<4;j++)
+            {
+                for(k=0;k<3;k++)
+                {
+                    product1 = product1 + input1[i][k]*weights1[k][j];
+                }
+                layer1[i][j]=sigmoid(product1+bias1[i][j]);
+                product1=0;
+            }
+        }
+        for (i=0;i<4;i++)
+        {
+            for(j=0;j<5;j++)
+            {
+                for(k=0;k<4;k++)
+                {
+                    product1 = product1 + layer1[i][k]*weights2[k][j];
+                }
+                layer2[i][j]=LeakyRelu(product1+bias2[i][j]);
+                product1=0;
+            }
+        }
+        printf("\nOutput\n");
+        for (i=0;i<4;i++)
+        {
+            for(j=0;j<5;j++)
+            {
+                product1 = product1 + layer2[i][j]*weights3[j];
+            }
+            output[i]=sigmoid(product1+bias3[i]);
+            product1=0;
+            printf("%f\t",output[i]);
+        }
+        printf("\n");
+        
 }

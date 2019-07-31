@@ -14,7 +14,7 @@ float layer2[4][5];
 float bias1[4][4];
 float bias2[4][5];
 float bias3[5];
-float alpha=0.1;
+float alpha=1;
 float sigmoid(float x)
 {
      float exp_value;
@@ -66,7 +66,7 @@ void main()
     {
             weights3[j]=(double)rand() / (double)RAND_MAX ;
     }
-    for (i=0;i<4;i++)
+    /*for (i=0;i<4;i++)
     {
         for(j=0;j<4;j++)
         {
@@ -83,7 +83,7 @@ void main()
     for(j=0;j<4;j++)
     {
             bias3[j]=(double)rand() / (double)RAND_MAX ;
-    }
+    }*/
     for(epoch=0;epoch<5000;epoch++)
     {
         
@@ -96,7 +96,7 @@ void main()
                 {
                     product1 = product1 + input[i][k]*weights1[k][j];
                 }
-                layer1[i][j]=sigmoid(product1+bias1[i][j]);
+                layer1[i][j]=sigmoid(product1);
                 product1=0;
             }
         }
@@ -108,7 +108,7 @@ void main()
                 {
                     product1 = product1 + layer1[i][k]*weights2[k][j];
                 }
-                layer2[i][j]=sigmoid(product1+bias2[i][j]);
+                layer2[i][j]=sigmoid(product1);
                 product1=0;
             }
         }
@@ -119,7 +119,7 @@ void main()
             {
                 product1 = product1 + layer2[i][j]*weights3[j];
             }
-            output[i]=sigmoid(product1+bias3[i]);
+            output[i]=sigmoid(product1);
             product1=0;
             printf("%f\t",output[i]);
         }
@@ -211,33 +211,43 @@ void main()
         {
                 weights3[j] +=alpha*d_weights3[j];
         }
-        /*********************UPDATE BIAS*****************************/
-          //      printf("\nBias1\n");
-        for (i=0;i<4;i++)
+    }
+     /***********TESTING********************/
+    double input1[4][3]={{0,1,1},{0,0,1},{1,1,1},{1,0,1}};/* 1 0 0 1*/
+    for (i=0;i<4;i++)
         {
             for(j=0;j<4;j++)
             {
-               bias1[i][j] +=alpha*interm3[i][j];
-               //printf("%f\t",bias1[i][j]);
+                for(k=0;k<3;k++)
+                {
+                    product1 = product1 + input1[i][k]*weights1[k][j];
+                }
+                layer1[i][j]=sigmoid(product1);
+                product1=0;
             }
-            //printf("\n");
         }
-        //printf("\nBias2\n");
         for (i=0;i<4;i++)
         {
             for(j=0;j<5;j++)
             {
-               bias2[i][j] +=alpha*interm2[i][j];
-               //printf("%f\t",bias2[i][j]);
+                for(k=0;k<4;k++)
+                {
+                    product1 = product1 + layer1[i][k]*weights2[k][j];
+                }
+                layer2[i][j]=sigmoid(product1);
+                product1=0;
             }
-            //printf("\n");
         }
-        //printf("\nBias3\n");
-        for(j=0;j<4;j++)
+        printf("\nOutput\n");
+        for (i=0;i<4;i++)
         {
-                bias3[j] +=alpha*interm1[j];
-                //printf("%f\t",bias3[j]);
+            for(j=0;j<5;j++)
+            {
+                product1 = product1 + layer2[i][j]*weights3[j];
+            }
+            output[i]=sigmoid(product1);
+            product1=0;
+            printf("%f\t",output[i]);
         }
         printf("\n");
-    }
 }
