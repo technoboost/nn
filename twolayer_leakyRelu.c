@@ -84,19 +84,19 @@ void main()
     {
         for(j=0;j<4;j++)
         {
-            bias1[i][j]=(double)rand() / (double)RAND_MAX ;
+            bias1[i][j]=0 ;
         }
     }
     for (i=0;i<5;i++)
     {
         for(j=0;j<5;j++)
         {
-            bias2[i][j]=(double)rand() / (double)RAND_MAX ;
+            bias2[i][j]=0 ;
         }
     }
     for(j=0;j<4;j++)
     {
-            bias3[j]=(double)rand() / (double)RAND_MAX ;
+            bias3[j]=0 ;
     }
     for(epoch=0;epoch<5000;epoch++)
     {

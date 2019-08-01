@@ -168,11 +168,11 @@ void main()
     doublemalloc(&d_weights3,5,1);
     doublerandom(&weights3,5,1);
     doublemalloc(&bias1,4,4);
-    doublerandom(&bias1,4,4);
+    doublezero(&bias1,4,4);
     doublemalloc(&bias2,4,5);
-    doublerandom(&bias2,4,5);
+    doublezero(&bias2,4,5);
     doublemalloc(&bias3,4,1);
-    doublerandom(&bias3,4,1);
+    doublezero(&bias3,4,1);
     doublemalloc(&interm1,4,1);
     doublemalloc(&interm2,4,5);
     doublemalloc(&interm3,4,4);

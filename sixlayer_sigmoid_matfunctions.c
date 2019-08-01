@@ -215,19 +215,19 @@ void main()
     doublerandom(&weights[6],4,1);
     
     doublemalloc(&bias[0],4,4);
-    doublerandom(&bias[0],4,4);
+    doublezero(&bias[0],4,4);
     doublemalloc(&bias[1],4,5);
-    doublerandom(&bias[1],4,5);
+    doublezero(&bias[1],4,5);
     doublemalloc(&bias[2],4,6);
-    doublerandom(&bias[2],4,6);
+    doublezero(&bias[2],4,6);
     doublemalloc(&bias[3],4,6);
-    doublerandom(&bias[3],4,6);
+    doublezero(&bias[3],4,6);
     doublemalloc(&bias[4],4,6);
-    doublerandom(&bias[4],4,6);
+    doublezero(&bias[4],4,6);
     doublemalloc(&bias[5],4,4);
-    doublerandom(&bias[5],4,4);
+    doublezero(&bias[5],4,4);
     doublemalloc(&bias[6],4,1);
-    doublerandom(&bias[6],4,1);
+    doublezero(&bias[6],4,1);
 
     doublemalloc(&interm[0],4,1);
     doublemalloc(&interm[1],4,4);

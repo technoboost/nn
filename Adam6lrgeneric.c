@@ -265,7 +265,7 @@ void main(int argc, char *argv[])
         doublezero(&weights_v_t[i],num_neurons[i],num_neurons[i+1]);
         doublemalloc(&tweights[i],num_neurons[i+1],num_neurons[i]);
         doublemalloc(&bias[i],BATCH_SIZE,num_neurons[i+1]);
-        doublerandom(&bias[i],BATCH_SIZE,num_neurons[i+1]);
+        doublezero(&bias[i],BATCH_SIZE,num_neurons[i+1]);
         doublemalloc(&bias_m_t[i],BATCH_SIZE,num_neurons[i+1]);
         doublemalloc(&bias_v_t[i],BATCH_SIZE,num_neurons[i+1]);
         doublezero(&bias_m_t[i],BATCH_SIZE,num_neurons[i+1]);

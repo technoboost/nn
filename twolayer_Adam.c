@@ -109,7 +109,7 @@ void main()
     {
         for(j=0;j<4;j++)
         {
-            bias1[i][j]=(double)rand() / (double)RAND_MAX ;
+            bias1[i][j]=0 ;
             bias1_m_t[i][j]=0;
             bias1_v_t[i][j]=0;
         }
@@ -118,14 +118,14 @@ void main()
     {
         for(j=0;j<5;j++)
         {
-            bias2[i][j]=(double)rand() / (double)RAND_MAX ;
+            bias2[i][j]=0 ;
             bias2_m_t[i][j]=0;
             bias2_v_t[i][j]=0;
         }
     }
     for(j=0;j<4;j++)
     {
-            bias3[j]=(double)rand() / (double)RAND_MAX ;
+            bias3[j]=0 ;
             bias3_m_t[j]=0;
             bias3_v_t[j]=0;
     }
