@@ -4,10 +4,10 @@
 #include <stdlib.h>
 #include <time.h>
 #include <string.h>
-#define NUM_LAYERS 3
+#define NUM_LAYERS 8
 #define BATCH_SIZE 10
 #define INPUT_SIZE 2
-int num_neurons[NUM_LAYERS]={INPUT_SIZE,5,1};
+int num_neurons[NUM_LAYERS]={INPUT_SIZE,5,10,10,20,10,4,1};
 double y[BATCH_SIZE];
 double alpha=1;
 double beta_1 = 0.9;
@@ -256,7 +256,7 @@ void updateparams(int row, int col, double *ans[], double *ans_m_t[], double *an
 void main(int argc, char *argv[])
 {
     int linenumber = 0;
-    int datacount = 500,batch_iter=0;
+    int datacount = 20000,batch_iter=0;
     int i,j,k,epoch,t;
     double **weights[NUM_LAYERS-1];
     double **weights_m_t[NUM_LAYERS-1];
@@ -303,10 +303,10 @@ void main(int argc, char *argv[])
     }
     else
     {
-        for(epoch=0;epoch<800;epoch++)
+        for(epoch=0;epoch<10000;epoch++)
         {        
             linenumber = 0;
-            printf("%d",epoch);
+            printf("%d\n",epoch);
             /*for(i=0;i<(NUM_LAYERS-1);i++)
             {
                  doubledropout(num_neurons[i],num_neurons[i+1],weights[i],weights[i]);
@@ -364,12 +364,12 @@ void main(int argc, char *argv[])
                 }//batch_iter
             }//while
             
-            printf("\nOutput\n");
+            /*printf("\nOutput\n");
             for (i=0;i<BATCH_SIZE;i++)
             {
                 printf("%lf\t",output[i][0]);
             }
-            printf("\n");
+            printf("\n");*/
            
         }//epoch
                 /************************TESTING***************************************/
