@@ -8,8 +8,8 @@
 #define BATCH_SIZE 4
 #define INPUT_SIZE 2
 #define CHECK_POINT 100
-#define DATA_COUNT 200
-#define EPOCH_C 2000
+#define DATA_COUNT 20000
+#define EPOCH_C 40000
 int num_neurons[NUM_LAYERS]={INPUT_SIZE,5,10,10,20,10,4,1};
 double y[BATCH_SIZE];
 double alpha=0.001;
