@@ -14,7 +14,7 @@ double layer2[4][5];
 double bias1[4][4];
 double bias2[4][5];
 double bias3[5];
-double alpha=0.1;
+double alpha=0.01;
 double beta_1 = 0.9;
 double beta_2 = 0.999;
 double epsilon = 1e-8;
@@ -156,7 +156,7 @@ void main()
                 product1=0;
             }
         }
-        printf("\nOutput\n");
+        //printf("\nOutput\n");
         for (i=0;i<4;i++)
         {
             for(j=0;j<5;j++)
@@ -165,9 +165,9 @@ void main()
             }
             output[i]=sigmoid(product1+bias3[i]);
             product1=0;
-            printf("%f\t",output[i]);
+            //printf("%f\t",output[i]);
         }
-        printf("\n");
+        //printf("\n");
         
         
         /***********************BACKPROPAGATION****************************/
@@ -234,7 +234,6 @@ void main()
                 product1=0;
             }
         }
-        
         
         /*********************UPDATE WEIGHTS*****************************/
         t+=1;
@@ -310,7 +309,7 @@ void main()
 	            bias_prev = bias3[j];
 	            bias3[j] = bias3[j] + (alpha*m_cap)/(sqrt(v_cap)+epsilon);	//updates the parameters
         }
-        printf("\n");
+       // printf("\n");
     }
     
     /***********TESTING********************/
