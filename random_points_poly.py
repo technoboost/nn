@@ -15,7 +15,7 @@ def random_point_within(poly):
 
     
 poly = Polygon([(141.4378366,-25.95915986), (165.4279876,-29.43400298), (163.1382942,-47.65345814), (133.1675418,-42.99807751)])
-points = [random_point_within(poly) for i in range(200)]
+points = [random_point_within(poly) for i in range(10000)]
 checks = [int(point.within(poly)) for point in points]
 print (checks[2])
 tmp =[]

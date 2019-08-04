@@ -7,7 +7,7 @@
 #define NUM_LAYERS 8
 #define BATCH_SIZE 4
 #define INPUT_SIZE 2
-#define TEST_SIZE 200
+#define TEST_SIZE 10000
 double y[BATCH_SIZE];
 
 int num_neurons[NUM_LAYERS]={INPUT_SIZE,5,10,10,20,10,4,1};
@@ -43,7 +43,7 @@ void readcsvfile(char *inputfile,int linenumber,int size, double *input[])
             }
             tmp = strdup(line);
             sscanf(getfield(tmp,INPUT_SIZE+1), "%lf", &y[i-linenumber]);
-            printf(" %lf\n",y[i-linenumber]);
+            //printf(" %lf\n",y[i-linenumber]);
             // NOTE strtok clobbers tmp
             free(tmp);
         }
@@ -199,6 +199,8 @@ void main(int argc, char *argv[])
             }
             if(output[i][0]!=y[i])
             {
+                //printf("%lf\t",layer[0][i][0]);
+                //printf("%lf\t",y[i]);
                 fv++;
             }
         }
