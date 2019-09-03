@@ -7,7 +7,7 @@
 #define NUM_LAYERS 8
 #define BATCH_SIZE 4
 #define INPUT_SIZE 2
-#define TEST_SIZE 10000
+#define TEST_SIZE 20000
 double y[BATCH_SIZE];
 
 int num_neurons[NUM_LAYERS]={INPUT_SIZE,5,10,10,20,10,4,1};
@@ -185,10 +185,10 @@ void main(int argc, char *argv[])
         matmul(BATCH_SIZE,num_neurons[i],num_neurons[i],num_neurons[i+1],output,layer[NUM_LAYERS-2],weights[NUM_LAYERS-2]);
         matsum(BATCH_SIZE,num_neurons[i+1],output,output,bias[NUM_LAYERS-2]);
         doublematsigmoid(BATCH_SIZE,num_neurons[i+1],output,output);
-        printf("\nOutput\n");
+        //printf("\nOutput\n");
         for (i=0;i<BATCH_SIZE;i++)
         {
-            printf("%lf\t",output[i][0]);
+            //printf("%lf\t",output[i][0]);
             if(output[i][0]>0.5)
             {
                 output[i][0]=1;
@@ -204,7 +204,7 @@ void main(int argc, char *argv[])
                 fv++;
             }
         }
-         printf("\n");
+        // printf("\n");
     }
     printf("Error rate : %f \n",(double)(fv/TEST_SIZE));
     printf("Errors : %f \n",fv);

@@ -17,23 +17,6 @@ double beta_1 = 0.9;
 double beta_2 = 0.999;
 double epsilon = 1e-8;
 
-int rando() {
-    int n;
-    n = rand()%2 ;
-    return n;
-}
-
-void doubledropout(int row, int col, double *ans[], double *matrix[])
-{
-    int i,j;
-    for(i=0;i<row;i++)
-    {
-        for(j=0;j<col;j++)
-        {
-             ans[i][j]=rando()*matrix[i][j];
-        }
-    }
-}
 const char* getfield(char* line, int num)
 {
     const char* tok;

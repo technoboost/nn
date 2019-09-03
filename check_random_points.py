@@ -17,16 +17,6 @@ def random_point_within(poly):
 #poly = Polygon([(141.4378366,-25.95915986), (165.4279876,-29.43400298), (163.1382942,-47.65345814), (133.1675418,-42.99807751)])
 poly =Polygon([(45.43484,-115.4248),(47.38203,-110.73865),(47.62409,-106.96061),(47.57653,-101.86523),(46.10371,-99.53613),(44.53842,-102.85412),(44.06667,-106.35545),(42.04122,-108.44858),(39.41135,-111.25999),(39.70414,-115.05032),(41.88252,-118.35791),(44.2452,-118.34473),(46.09587,-119.39489),(47.24941,-116.58691)])
 points = [random_point_within(poly) for i in range(20000)]
-checks = [int(point.within(poly)) for point in points]
-print (checks[2])
-tmp =[]
-for point in points:
-    tmp = tmp + [ [str(point).split('(')[1].split(')')[0]]]
-#print row
-#print [[str(float((i[0].split(' ')[0]))/165.4279876)+' '+ str(float((i[0].split(' ')[1]))/-47.65345814)] for i in tmp]
-row = [[str(float((i[0].split(' ')[0]))/47.62409)+' '+ str(float((i[0].split(' ')[1]))/-119.39489)+' ' + str(checks[j]) ] for i,j in zip(tmp,range(len(checks)))]
-#print float(row[:][0].split(' ')[0])/165.4279876
-with open('traindata2.csv', 'w') as csvFile:
-    writer = csv.writer(csvFile)
-    writer.writerows(row)
-csvFile.close()
+#checks = [int(point.within(poly)) for point in points]
+#print (checks[2])
+
