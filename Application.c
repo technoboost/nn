@@ -163,7 +163,8 @@ void main(int argc, char *argv[])
     double **output;
     int i,j,k;
     double fv=0;
- 
+    clock_t start, end;
+    double cpu_time_used,total_time=0;
     for(i=0;i<(NUM_LAYERS-1);i++)
     {
         doublemalloc(&weights[i],num_neurons[i],num_neurons[i+1]);
@@ -176,6 +177,7 @@ void main(int argc, char *argv[])
     for (j=0;j<TEST_SIZE;j+=4)
     {
         readcsvfile(argv[1],j,BATCH_SIZE,layer[0]);
+        start = clock();
         for(i=0;i<(NUM_LAYERS-2);i++)
         {
             matmul(BATCH_SIZE,num_neurons[i],num_neurons[i],num_neurons[i+1],layer[i+1],layer[i],weights[i]);
@@ -185,6 +187,9 @@ void main(int argc, char *argv[])
         matmul(BATCH_SIZE,num_neurons[i],num_neurons[i],num_neurons[i+1],output,layer[NUM_LAYERS-2],weights[NUM_LAYERS-2]);
         matsum(BATCH_SIZE,num_neurons[i+1],output,output,bias[NUM_LAYERS-2]);
         doublematsigmoid(BATCH_SIZE,num_neurons[i+1],output,output);
+        end = clock();
+        cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+        total_time+=cpu_time_used;
         //printf("\nOutput\n");
         for (i=0;i<BATCH_SIZE;i++)
         {
@@ -208,4 +213,5 @@ void main(int argc, char *argv[])
     }
     printf("Error rate : %f \n",(double)(fv/TEST_SIZE));
     printf("Errors : %f \n",fv);
+    printf("Total time : %lf \n",total_time);
 }
