@@ -314,6 +314,28 @@ void doublematdsigmoid(int row, int col,double *ans[], double *matrix[])
         }
     }
 }
+void doublematrelu(int row, int col,double *ans[], double *matrix[])
+{
+    int i,j;
+    for(i=0; i<row; i++)
+    {
+        for(j=0; j<col; j++)
+        {
+            ans[i][j]=Relu(matrix[i][j]);
+        }
+    }
+}
+void doublematdrelu(int row, int col,double *ans[], double *matrix[])
+{
+    int i,j;
+    for(i=0; i<row; i++)
+    {
+        for(j=0; j<col; j++)
+        {
+            ans[i][j]*=dRelu(matrix[i][j]);
+        }
+    }
+}
 void doublematleakyrelu(int row, int col,double *ans[], double *matrix[])
 {
     int i,j;
@@ -455,7 +477,31 @@ void main(int argc, char *argv[])
                         {
                             matmul(BATCH_SIZE,num_neurons[i],num_neurons[i],num_neurons[i+1],layer[i+1],layer[i],weights[i]);
                             matsum(BATCH_SIZE,num_neurons[i+1],layer[i+1],layer[i+1],bias[i]);
-                            doublematsigmoid(BATCH_SIZE,num_neurons[i+1],layer[i+1],layer[i+1]);
+                            switch(i)
+                            {
+                            case 0:
+                                doublematsigmoid(BATCH_SIZE,num_neurons[i+1],layer[i+1],layer[i+1]);
+                                break;
+                            case 1:
+                                doublematsigmoid(BATCH_SIZE,num_neurons[i+1],layer[i+1],layer[i+1]);
+                                break;
+                            case 2:
+                                doublematsigmoid(BATCH_SIZE,num_neurons[i+1],layer[i+1],layer[i+1]);
+                                break;
+                            case 3:
+                                doublematsigmoid(BATCH_SIZE,num_neurons[i+1],layer[i+1],layer[i+1]);
+                                break;
+                            case 4:
+                                doublematsigmoid(BATCH_SIZE,num_neurons[i+1],layer[i+1],layer[i+1]);
+                                break;
+                            case 5:
+                                doublematsigmoid(BATCH_SIZE,num_neurons[i+1],layer[i+1],layer[i+1]);
+                                break;
+                            default:
+                                doublematsigmoid(BATCH_SIZE,num_neurons[i+1],layer[i+1],layer[i+1]);
+                                break;
+                            }
+                            
                         }
                         matmul(BATCH_SIZE,num_neurons[i],num_neurons[i],num_neurons[i+1],output,layer[NUM_LAYERS-2],weights[NUM_LAYERS-2]);
                         matsum(BATCH_SIZE,num_neurons[i+1],output,output,bias[NUM_LAYERS-2]);
@@ -472,7 +518,30 @@ void main(int argc, char *argv[])
                             matmul(num_neurons[NUM_LAYERS-2-i],BATCH_SIZE,BATCH_SIZE,num_neurons[NUM_LAYERS-1-i],d_weights[NUM_LAYERS-2-i],tlayer[NUM_LAYERS-2-i],interm[i]);
                             mattranspose(num_neurons[NUM_LAYERS-2-i],num_neurons[NUM_LAYERS-1-i],tweights[NUM_LAYERS-2-i],weights[NUM_LAYERS-2-i]);
                             matmul(BATCH_SIZE,num_neurons[NUM_LAYERS-1-i],num_neurons[NUM_LAYERS-1-i],num_neurons[NUM_LAYERS-2-i],interm[i+1],interm[i],tweights[NUM_LAYERS-2-i]); 
-                            doublematdsigmoid(BATCH_SIZE,num_neurons[NUM_LAYERS-2-i],interm[i+1],layer[NUM_LAYERS-2-i]);
+                            switch(i)
+                            {
+                            case 0:
+                                doublematdsigmoid(BATCH_SIZE,num_neurons[NUM_LAYERS-2-i],interm[i+1],layer[NUM_LAYERS-2-i]);
+                                break;
+                            case 1:
+                                doublematdsigmoid(BATCH_SIZE,num_neurons[NUM_LAYERS-2-i],interm[i+1],layer[NUM_LAYERS-2-i]);
+                                break;
+                            case 2:
+                                doublematdsigmoid(BATCH_SIZE,num_neurons[NUM_LAYERS-2-i],interm[i+1],layer[NUM_LAYERS-2-i]);
+                                break;
+                            case 3:
+                                doublematdsigmoid(BATCH_SIZE,num_neurons[NUM_LAYERS-2-i],interm[i+1],layer[NUM_LAYERS-2-i]);
+                                break;
+                            case 4:
+                                doublematdsigmoid(BATCH_SIZE,num_neurons[NUM_LAYERS-2-i],interm[i+1],layer[NUM_LAYERS-2-i]);
+                                break;
+                            case 5:
+                                doublematdsigmoid(BATCH_SIZE,num_neurons[NUM_LAYERS-2-i],interm[i+1],layer[NUM_LAYERS-2-i]);
+                                break;
+                            default:
+                                doublematdsigmoid(BATCH_SIZE,num_neurons[NUM_LAYERS-2-i],interm[i+1],layer[NUM_LAYERS-2-i]);
+                                break;
+                            }
                         }    
                         mattranspose(BATCH_SIZE,num_neurons[0],tlayer[0],layer[0]);
                         matmul(num_neurons[0],BATCH_SIZE,BATCH_SIZE,num_neurons[1],d_weights[0],tlayer[0],interm[NUM_LAYERS-2]);
@@ -493,12 +562,12 @@ void main(int argc, char *argv[])
                     }//batch_iter
                 }//while
                 
-                /*printf("\nOutput\n");
+                printf("\nOutput\n");
                 for (i=0;i<BATCH_SIZE;i++)
                 {
                     printf("%lf\t",output[i][0]);
                 }
-                printf("\n");*/
+                printf("\n");
                 printf("%d\n",epoch);
                epoch++;
                fclose(stream);

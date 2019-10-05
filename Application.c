@@ -133,6 +133,13 @@ double sigmoid(double x)
 
      return return_value;
 }
+double Relu(double x)
+{
+    if (x >= 0)
+        return x;
+    else
+        return 0;
+}
 void doublemalloc(double ***var,int row,int col)
 {
     int i;
@@ -153,7 +160,17 @@ void doublematsigmoid(int row, int col,double *ans[], double *matrix[])
         }
     }
 }
-
+void doublematrelu(int row, int col,double *ans[], double *matrix[])
+{
+    int i,j;
+    for(i=0; i<row; i++)
+    {
+        for(j=0; j<col; j++)
+        {
+            ans[i][j]=Relu(matrix[i][j]);
+        }
+    }
+}
 void main(int argc, char *argv[])
 {
     double **weights[NUM_LAYERS-1];
@@ -182,7 +199,7 @@ void main(int argc, char *argv[])
         {
             matmul(BATCH_SIZE,num_neurons[i],num_neurons[i],num_neurons[i+1],layer[i+1],layer[i],weights[i]);
             matsum(BATCH_SIZE,num_neurons[i+1],layer[i+1],layer[i+1],bias[i]);
-            doublematsigmoid(BATCH_SIZE,num_neurons[i+1],layer[i+1],layer[i+1]);
+            doublematrelu(BATCH_SIZE,num_neurons[i+1],layer[i+1],layer[i+1]);
         }
         matmul(BATCH_SIZE,num_neurons[i],num_neurons[i],num_neurons[i+1],output,layer[NUM_LAYERS-2],weights[NUM_LAYERS-2]);
         matsum(BATCH_SIZE,num_neurons[i+1],output,output,bias[NUM_LAYERS-2]);

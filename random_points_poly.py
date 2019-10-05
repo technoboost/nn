@@ -31,7 +31,7 @@ for point in points:
 #print [[str(float((i[0].split(' ')[0]))/165.4279876)+' '+ str(float((i[0].split(' ')[1]))/-47.65345814)] for i in tmp]
 row = [[str(float((i[0].split(' ')[0]))/max_x)+' '+ str(float((i[0].split(' ')[1]))/min_y)+' ' + str(checks[j]) ] for i,j in zip(tmp,range(len(checks)))]
 #print float(row[:][0].split(' ')[0])/165.4279876
-with open('testdata.csv', 'w') as csvFile:
+with open('traindata.csv', 'w') as csvFile:
     writer = csv.writer(csvFile)
     writer.writerows(row)
 csvFile.close()
