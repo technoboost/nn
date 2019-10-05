@@ -23,33 +23,32 @@ const char* getfield(char* line, int num)
     }
     return NULL;
 }
-void readcsvfile(char *inputfile,int linenumber,int size, double *input[])
+void readcsvfile(FILE* stream ,int linenumber,int size, double *input[])
 {
-    FILE* stream = fopen(inputfile, "r");
+    
     char line[1024];
     int i=0,j;
     char* tmp;
-    while (fgets(line, 1024, stream))
+    i=linenumber;
+    while (i<(linenumber+size))
     {
-        if( i>=linenumber && i<(linenumber+size))
-        {
-            for(j=0;j<INPUT_SIZE;j++)
-            { 
+        fgets(line, 1024, stream);
+        for(j=0;j<INPUT_SIZE;j++)
+        { 
                 tmp = strdup(line);
-                //printf("Field 1 would be %s", getfield(tmp, 1));
+                //printf("  %s", getfield(tmp, j+1));
                 sscanf(getfield(tmp,j+1), "%lf", &input[i-linenumber][j]);
                 // NOTE strtok clobbers tmp
                 free(tmp);
-            }
+        }
             tmp = strdup(line);
             sscanf(getfield(tmp,INPUT_SIZE+1), "%lf", &y[i-linenumber]);
             //printf(" %lf\n",y[i-linenumber]);
             // NOTE strtok clobbers tmp
             free(tmp);
-        }
-        i++;
+       i++;
     }
-    fclose(stream);
+
 }
 void restoreWeights(char *fileName, double **weights[])
 {
@@ -165,6 +164,7 @@ void main(int argc, char *argv[])
     double fv=0;
     clock_t start, end;
     double cpu_time_used,total_time=0;
+    FILE* stream = fopen(argv[1], "r");
     for(i=0;i<(NUM_LAYERS-1);i++)
     {
         doublemalloc(&weights[i],num_neurons[i],num_neurons[i+1]);
@@ -176,7 +176,7 @@ void main(int argc, char *argv[])
     restoreBias("bias.txt", bias);
     for (j=0;j<TEST_SIZE;j+=4)
     {
-        readcsvfile(argv[1],j,BATCH_SIZE,layer[0]);
+        readcsvfile(stream,j,BATCH_SIZE,layer[0]);
         start = clock();
         for(i=0;i<(NUM_LAYERS-2);i++)
         {
@@ -211,6 +211,7 @@ void main(int argc, char *argv[])
         }
         // printf("\n");
     }
+    fclose(stream);
     printf("Error rate : %f \n",(double)(fv/TEST_SIZE));
     printf("Errors : %f \n",fv);
     printf("Total time : %lf \n",total_time);

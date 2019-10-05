@@ -9,7 +9,7 @@
 #define INPUT_SIZE 2
 #define CHECK_POINT 100
 #define DATA_COUNT 20000
-#define EPOCH_C 4000
+#define EPOCH_C 100
 int num_neurons[NUM_LAYERS]={INPUT_SIZE,5,10,10,20,10,4,1};
 double y[BATCH_SIZE];
 double alpha=0.001;
@@ -30,33 +30,32 @@ const char* getfield(char* line, int num)
     return NULL;
 }
 
-void readcsvfile(char *inputfile,int linenumber,int size, double *input[])
+void readcsvfile(FILE* stream ,int linenumber,int size, double *input[])
 {
-    FILE* stream = fopen(inputfile, "r");
+    
     char line[1024];
     int i=0,j;
     char* tmp;
-    while (fgets(line, 1024, stream))
+    i=linenumber;
+    while (i<(linenumber+size))
     {
-        if( i>=linenumber && i<(linenumber+size))
-        {
-            for(j=0;j<INPUT_SIZE;j++)
-            { 
+        fgets(line, 1024, stream);
+        for(j=0;j<INPUT_SIZE;j++)
+        { 
                 tmp = strdup(line);
-                //printf("Field 1 would be %s", getfield(tmp, 1));
+                //printf("  %s", getfield(tmp, j+1));
                 sscanf(getfield(tmp,j+1), "%lf", &input[i-linenumber][j]);
                 // NOTE strtok clobbers tmp
                 free(tmp);
-            }
+        }
             tmp = strdup(line);
             sscanf(getfield(tmp,INPUT_SIZE+1), "%lf", &y[i-linenumber]);
             //printf(" %lf\n",y[i-linenumber]);
             // NOTE strtok clobbers tmp
             free(tmp);
-        }
-        i++;
+       i++;
     }
-    fclose(stream);
+
 }
 void storeWeights(char *fileName, double **weights[])
 {
@@ -174,6 +173,20 @@ double dLeakyRelu(double x)
         return 1;
     else
         return 1.0 / 20;
+}
+double Relu(double x)
+{
+    if (x >= 0)
+        return x;
+    else
+        return 0;
+}
+double dRelu(double x)
+{
+    if (x >= 0)
+        return 1;
+    else
+        return 0;
 }
 void matmul(int rowA,int colA,int rowB,int colB, double *ans[], double *first[], double *second[])
 {
@@ -360,6 +373,7 @@ void main(int argc, char *argv[])
     double **tlayer[NUM_LAYERS-1];
     double **tweights[NUM_LAYERS-1];
     srand(time(0));
+    FILE* stream;
     for(i=0;i<(NUM_LAYERS-1);i++)
     {
         doublemalloc(&weights[i],num_neurons[i],num_neurons[i+1]);
@@ -413,7 +427,8 @@ void main(int argc, char *argv[])
         if(t<(EPOCH_C*DATA_COUNT/BATCH_SIZE))
         {
             while(epoch<EPOCH_C)
-            {        
+            {      
+                stream = fopen(argv[1], "r");  
                 if(epoch%CHECK_POINT==0)
                 {
                     storeWeights("weights.txt", weights);
@@ -429,8 +444,7 @@ void main(int argc, char *argv[])
                 linenumber = 0;
                 while(linenumber<DATA_COUNT)
                 {
-                    
-                    readcsvfile(argv[1],linenumber,BATCH_SIZE,layer[0]);
+                    readcsvfile(stream,linenumber,BATCH_SIZE,layer[0]);
                     linenumber+=BATCH_SIZE;           
                     //printf("%d",linenumber);
                     for(batch_iter=0;batch_iter<1;batch_iter++)
@@ -485,7 +499,9 @@ void main(int argc, char *argv[])
                     printf("%lf\t",output[i][0]);
                 }
                 printf("\n");*/
+                printf("%d\n",epoch);
                epoch++;
+               fclose(stream);
             }//epoch
         }
         t=0;
@@ -497,8 +513,10 @@ void main(int argc, char *argv[])
         storeBias("bias_v_t.txt", bias_v_t);
         storeT("storeT.txt",t);
         printf("CHECK_POINT saved.\n");
+        
         /************************TESTING***************************************/
-        readcsvfile(argv[2],0,4,layer[0]);
+        stream = fopen(argv[2], "r");
+        readcsvfile(stream,0,4,layer[0]);
         for(i=0;i<(NUM_LAYERS-2);i++)
         {
             matmul(BATCH_SIZE,num_neurons[i],num_neurons[i],num_neurons[i+1],layer[i+1],layer[i],weights[i]);
@@ -514,5 +532,6 @@ void main(int argc, char *argv[])
             printf("%lf\t",output[i][0]);
         }
         printf("\n");
+        fclose(stream);
     }//else
 }
