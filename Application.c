@@ -5,7 +5,7 @@
 #include <time.h>
 #include <string.h>
 #define NUM_LAYERS 8
-#define BATCH_SIZE 4
+#define BATCH_SIZE 1
 #define INPUT_SIZE 2
 #define TEST_SIZE 20000
 double y[BATCH_SIZE];
@@ -191,7 +191,7 @@ void main(int argc, char *argv[])
     doublemalloc(&output,BATCH_SIZE,1);
     restoreWeights("weights.txt", weights);
     restoreBias("bias.txt", bias);
-    for (j=0;j<TEST_SIZE;j+=4)
+    for (j=0;j<TEST_SIZE;j+=BATCH_SIZE)
     {
         readcsvfile(stream,j,BATCH_SIZE,layer[0]);
         start = clock();
